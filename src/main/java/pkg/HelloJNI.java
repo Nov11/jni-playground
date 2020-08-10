@@ -1,6 +1,12 @@
 package pkg;
 
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class HelloJNI {  // Save as HelloJNI.java
+    private static final Logger logger = getLogger(HelloJNI.class);
+
     static {
         System.loadLibrary("native"); // Load native library hello.dll (Windows) or libhello.so (Unixes)
         //  at runtime
@@ -18,7 +24,7 @@ public class HelloJNI {  // Save as HelloJNI.java
 
     public native String printUserData(UserData user);
 
-    public native double[][] search(double[][] embedding);
+    public native double[][][] search(double[][] embedding, int count);
 
     // Test Driver
     public static void main(String[] args) {
@@ -30,5 +36,23 @@ public class HelloJNI {  // Save as HelloJNI.java
 
         String hello = helloJNI.sayHelloToMe("name", false);
         System.out.println(hello);
+
+        double[][] input = new double[5][];
+        for (int i = 0; i < 5; i++) {
+            double[] tmp = new double[2];
+            for (int j = 0; j < 2; j++) {
+                tmp[j] = i;
+            }
+            input[i] = tmp;
+        }
+
+        double[][][] output = helloJNI.search(input, 3);
+        double[][] nearest = output[0];
+        double[][] score = output[1];
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < nearest[i].length; j++) {
+                logger.info("{} near : {} score : {}", input[i], nearest[i][j], score[i][j]);
+            }
+        }
     }
 }

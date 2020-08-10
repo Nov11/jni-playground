@@ -50,10 +50,10 @@ JNIEXPORT jstring JNICALL Java_pkg_HelloJNI_printUserData
 /*
  * Class:     pkg_HelloJNI
  * Method:    search
- * Signature: ([[D)[[D
+ * Signature: ([[DI)[[[D
  */
 JNIEXPORT jobjectArray JNICALL Java_pkg_HelloJNI_search
-  (JNIEnv *, jobject, jobjectArray);
+  (JNIEnv *, jobject, jobjectArray, jint);
 
 #ifdef __cplusplus
 }
