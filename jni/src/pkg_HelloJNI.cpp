@@ -57,14 +57,48 @@ JNIEXPORT jstring JNICALL Java_pkg_HelloJNI_printUserData
 }
 
 JNIEXPORT jobjectArray JNICALL Java_pkg_HelloJNI_search
-        (JNIEnv *env, jobject thisObject, jobjectArray doubleArrayOfDouble) {
-    int m = env->GetArrayLength(doubleArrayOfDouble);
-    if (m == 0) {
+        (JNIEnv *env, jobject thisObject, jobjectArray arrayOfDoubleArray, jint count) {
+    int nq = env->GetArrayLength(arrayOfDoubleArray);
+    if (nq == 0) {
         return nullptr;
     }
-    for (int i = 0; i < m; i++) {
-        auto currentArray = (jdoubleArray) env->GetObjectArrayElement(doubleArrayOfDouble, i);
+    auto firstArray = (jdoubleArray) env->GetObjectArrayElement(arrayOfDoubleArray, 0);
+    int d = env->GetArrayLength(firstArray);
+
+    double *matrix = new double[nq * d];
+
+    for (int i = 0; i < nq; i++) {
+        auto tmp = (jdoubleArray) env->GetObjectArrayElement(arrayOfDoubleArray, i);
         jboolean isCopy = false;
-        jdouble *doubleArray = env->GetDoubleArrayElements(currentArray, &isCopy);
+        jdouble *array = env->GetDoubleArrayElements(tmp, &isCopy);
+        for (int j = 0; j < d; j++) {
+            matrix[i * d + j] = array[j];
+        }
+        env->ReleaseDoubleArrayElements(tmp, array, JNI_ABORT);
     }
+
+    for (int i = 0; i < nq; i++) {
+        for (int j = 0; j < d; j++) {
+            cout << matrix[i * d + j] << " ";
+        }
+        cout << endl;
+    }
+
+
+    jclass dd = env->FindClass("[[D");
+    jobjectArray result = env->NewObjectArray(2, dd, nullptr);
+    for (int outer = 0; outer < 2; outer++) {
+        jobjectArray middle = env->NewObjectArray(nq, env->FindClass("[D"), nullptr);
+        double *ptr = matrix;
+        for (int i = 0; i < nq; i++) {
+            jdoubleArray inner = env->NewDoubleArray(d);
+            env->SetDoubleArrayRegion(inner, 0, d, ptr);
+            ptr += d;
+            env->SetObjectArrayElement(middle, i, inner);
+        }
+        env->SetObjectArrayElement(result, outer, middle);
+    }
+
+    delete[] matrix;
+    return result;
 }

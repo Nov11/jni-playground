@@ -26,6 +26,14 @@ public class HelloJNI {  // Save as HelloJNI.java
 
     public native double[][][] search(double[][] embedding, int count);
 
+    private static void showMatrix(double[][] input) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+                logger.info("[{}, {}]  : {}", i, j, input[i][j]);
+            }
+        }
+    }
+
     // Test Driver
     public static void main(String[] args) {
         HelloJNI helloJNI = new HelloJNI();
@@ -41,18 +49,25 @@ public class HelloJNI {  // Save as HelloJNI.java
         for (int i = 0; i < 5; i++) {
             double[] tmp = new double[2];
             for (int j = 0; j < 2; j++) {
-                tmp[j] = i;
+                tmp[j] = i + j + 1;
             }
             input[i] = tmp;
+        }
+
+        logger.info("inputs:");
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 2; j++) {
+                logger.info("[{}, {}] {}", i, j, input[i][j]);
+            }
         }
 
         double[][][] output = helloJNI.search(input, 3);
         double[][] nearest = output[0];
         double[][] score = output[1];
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < nearest[i].length; j++) {
-                logger.info("{} near : {} score : {}", input[i], nearest[i][j], score[i][j]);
-            }
-        }
+        logger.info("nearest :");
+        showMatrix(nearest);
+        logger.info("score :");
+        showMatrix(score);
+
     }
 }
