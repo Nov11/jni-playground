@@ -54,7 +54,7 @@ public class HelloJNI {  // Save as HelloJNI.java
             input[i] = tmp;
         }
 
-        logger.info("inputs:");
+        logger.info("inputs:model");
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 2; j++) {
                 logger.info("[{}, {}] {}", i, j, input[i][j]);
